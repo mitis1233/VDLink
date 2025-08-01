@@ -35,11 +35,23 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Build Release APK
-      run: ./gradlew assembleRelease --stacktrace
+    - name: Decode Keystore and Build Release APK
+      env:
+        SIGNING_KEY_STORE_BASE64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+        SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+        SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+      run: |
+        if [ -n "$SIGNING_KEY_STORE_BASE64" ]; then
+          echo $SIGNING_KEY_STORE_BASE64 | base64 --decode > app/keystore.jks
+          ./gradlew assembleRelease --stacktrace
+        else
+          echo "Signing secrets not found, building unsigned APK."
+          ./gradlew assembleRelease --stacktrace
+        fi
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: VDLink-release
-        path: app/build/outputs/apk/release/app-release-unsigned.apk
+        path: app/build/outputs/apk/release/app-release.apk
