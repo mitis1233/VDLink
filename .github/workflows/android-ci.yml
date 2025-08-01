@@ -40,7 +40,7 @@ jobs:
         SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
       run: |
         if [ -n "$SIGNING_KEY_STORE_BASE64" ]; then
-          echo $SIGNING_KEY_STORE_BASE64 | base64 --decode > app/keystore.jks
+          echo $SIGNING_KEY_STORE_BASE64 | base64 --decode > keystore.jks
           ./gradlew assembleRelease --stacktrace
         else
           echo "Signing secrets not found, building unsigned APK."
