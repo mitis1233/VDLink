@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.vdshortcut'
+    namespace 'com.example.vdlink'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.vdshortcut"
+        applicationId "com.example.vdlink"
         minSdk 21
         targetSdk 33
         versionCode 1
@@ -16,22 +16,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    signingConfigs {
-        release {
-            storeFile file("keystore.jks")
-            storePassword System.getenv("SIGNING_STORE_PASSWORD")
-            keyAlias System.getenv("SIGNING_KEY_ALIAS")
-            keyPassword System.getenv("SIGNING_KEY_PASSWORD")
-        }
-    }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            if (System.getenv("SIGNING_STORE_PASSWORD")) {
-                signingConfig signingConfigs.release
-            }
         }
     }
     compileOptions {
