@@ -22,6 +22,15 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+
+    - name: Download gradle-wrapper.jar
+      run: |
+        PROPERTIES_FILE=gradle/wrapper/gradle-wrapper.properties
+        DIST_URL=$(grep "^distributionUrl=" "$PROPERTIES_FILE" | cut -d'=' -f2-)
+        WRAPPER_JAR_URL=${DIST_URL/bin.zip/wrapper.jar}
+        mkdir -p gradle/wrapper
+        curl -L -o gradle/wrapper/gradle-wrapper.jar "$WRAPPER_JAR_URL"
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
