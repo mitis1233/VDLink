@@ -36,7 +36,7 @@ jobs:
       run: ./gradlew build
 
     - name: Build Release APK
-      run: ./gradlew assembleRelease --stacktrace
+      run: ./gradlew clean assembleRelease --stacktrace
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
