@@ -1,45 +1,54 @@
-plugins {
-    id 'com.android.application'
-}
+name: Android CI
 
-android {
-    namespace 'com.example.vdshortcut'
-    compileSdk 33
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
-    defaultConfig {
-        applicationId "com.example.vdshortcut"
-        minSdk 21
-        targetSdk 33
-        versionCode 1
-        versionName "1.0"
+jobs:
+  build:
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
+    runs-on: ubuntu-latest
 
-    signingConfigs {
-        release {
-            storeFile file("keystore.jks")
-            storePassword System.getenv("SIGNING_STORE_PASSWORD")
-            keyAlias System.getenv("SIGNING_KEY_ALIAS")
-            keyPassword System.getenv("SIGNING_KEY_PASSWORD")
-        }
-    }
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            if (System.getenv("SIGNING_STORE_PASSWORD")) {
-                signingConfig signingConfigs.release
-            }
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-}
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: gradle
 
-dependencies {
-    // No specific dependencies needed for this simple app
-}
+
+    - name: Setup Gradle and Generate Wrapper
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: 7.5
+        arguments: wrapper
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build and Sign Release APK
+      env:
+        SIGNING_KEY_STORE_BASE64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+        SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+        SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+      run: |
+        if [ -n "$SIGNING_KEY_STORE_BASE64" ]; then
+          echo $SIGNING_KEY_STORE_BASE64 | base64 --decode > keystore.jks
+          ./gradlew assembleRelease --stacktrace
+        else
+          echo "Signing secrets not found, building unsigned APK."
+          ./gradlew assembleRelease --stacktrace
+        fi
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: VDLink-release
+        path: app/build/outputs/apk/release/app-release.apk
