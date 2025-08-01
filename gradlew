@@ -147,7 +147,7 @@ elif [ "$MAX_FD" != "-1" ]; then
 fi
 
 # Collect all arguments for the java command, following the shell quoting and substitution rules
-eval set -- "$DEFAULT_JVM_OPTS" "$JAVA_OPTS" "$GRADLE_OPTS" \"-Dorg.gradle.appname=$APP_BASE_NAME\" -classpath \"\"\"$CLASSPATH\"\"\" \"$CLASS\" \"\"\"\$@\"\"\""
+eval set -- "$DEFAULT_JVM_OPTS" "$JAVA_OPTS" "$GRADLE_OPTS" "-Dorg.gradle.appname=$APP_BASE_NAME" -classpath "\"$CLASSPATH\"" "$CLASS" "\"\$@\""
 
 # Use "exec" on the last line to save a process.
 exec "$JAVACMD" "$@"
