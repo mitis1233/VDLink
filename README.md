@@ -4,6 +4,10 @@
 
 其他Android系統的VR(如Quest) 基本上皆可使用(未測試)
 
+## 下載 Download
+
+[Download](https://github.com/mitis1233/VDLink/releases/latest/download/VDLink.apk)
+
 ## 截圖
 
 ![介面](https://github.com/mitis1233/VDLink/blob/main/Picture.png?raw=true)
