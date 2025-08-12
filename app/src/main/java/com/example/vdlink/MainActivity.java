@@ -3,9 +3,7 @@ package com.example.vdlink;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -19,18 +17,13 @@ public class MainActivity extends Activity {
         Intent launchIntent = pm.getLaunchIntentForPackage(VIRTUAL_DESKTOP_PACKAGE_NAME);
 
         if (launchIntent != null) {
-            // Start Virtual Desktop
+            // 嘗試將 Virtual Desktop 從後台拉到前台
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(launchIntent);
-        } else {
-            // App not installed, redirect to Play Store
-            Toast.makeText(this, "Virtual Desktop App not found. Redirecting to Play Store.", Toast.LENGTH_LONG).show();
-            try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + VIRTUAL_DESKTOP_PACKAGE_NAME)));
-            } catch (android.content.ActivityNotFoundException anfe) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + VIRTUAL_DESKTOP_PACKAGE_NAME)));
-            }
         }
-        // Finish this activity once it has done its job
+
+        // 無論有沒有啟動成功，直接結束自己
         finish();
     }
 }
